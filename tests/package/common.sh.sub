@@ -1,0 +1,27 @@
+set -e
+
+run_test()
+{
+  local script=$1
+  shift
+  juLog -name=$script `dirname $0`/run_test_with_options.sh.sub $script "$@"
+}
+
+if [ -z "$SH2JU_INITIATED" ]; then
+  . `dirname $0`/sh2ju/sh2ju.sh.sub
+
+  juLogClean
+
+  SH2JU_INITIATED=1
+  export SH2JU_INITIATED
+
+  if [ -z "$DO_NOT_RUN_SH2JU" ]; then
+    # This is to enable running single scripts, but still getting pretty output.
+    # They will source this file and end up here.
+    run_test $0 "$@"
+    exit $?
+  fi
+else
+  . `dirname $0`/packages.sh.sub
+  . `dirname $0`/platform.sh.sub
+fi

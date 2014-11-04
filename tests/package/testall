@@ -1,0 +1,14 @@
+#!/bin/sh
+
+TESTS="`find . -name '*.sh' | sort`"
+
+# Prevent sub execution of sh2ju. We are running it ourselves.
+DO_NOT_RUN_SH2JU=1
+. `dirname $0`/common.sh.sub
+
+ret_code=0
+for test in $TESTS; do
+  run_test $test || ret_code=$?
+done
+
+exit $ret_code

@@ -1,0 +1,67 @@
+. ../../build-scripts/detect-environment
+    
+install_package()
+{
+  case "$OS" in
+    rhel|centos)
+      rpm -Uvh "$1"
+      ;;
+
+    debian|ubuntu)
+      dpkg -i "$1"
+      ;;
+
+    aix)
+      installp -d "$1" `echo "$1" | sed -e 's/-[0-9].*//'`
+      ;;
+
+    solaris)
+      pkgadd -d "$1" `echo "$1" | sed -e 's/-[0-9].*//'`
+      ;;
+  esac
+}
+
+uninstall_package()
+{
+  case "$OS" in
+    rhel|centos)
+      rpm -evh "$1"
+      ;;
+
+    debian|ubuntu)
+      dpkg --purge "$1"
+      ;;
+
+    aix)
+      installp -u "$1"
+      ;;
+
+    solaris)
+      pkgrm "$1"
+      ;;
+  esac
+}
+
+extract_rpath()
+{
+  case "$OS_FAMILY" in
+    linux|solaris)
+      objdump -x "$1" | grep '^ *RPATH ' | sed -e 's/^ *RPATH *//'
+      ;;
+    aix)
+      objdump -P loader "$1" | grep -A100 '^Import files:' | grep '^ *0:' | sed -e 's/^ *0: *\([^,]*\).*/\1/'
+      ;;
+  esac
+}
+
+list_library_files()
+{
+  case "$OS_FAMILY" in
+    linux|solaris)
+      echo "$1"/*.so*
+      ;;
+    aix)
+      echo "$1"/*.so* "$1"/*.a
+      ;;
+  esac
+}
