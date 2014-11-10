@@ -263,7 +263,7 @@ build() {
 	  ;;
   esac
 
-  remote_script test
+  #remote_script test
   remote_script package
   remote_script prepare-results
 

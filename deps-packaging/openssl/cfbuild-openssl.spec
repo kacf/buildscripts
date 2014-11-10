@@ -13,7 +13,7 @@ BuildRoot: %{_topdir}/BUILD/%{name}-%{version}-%{release}-buildroot
 
 AutoReqProv: no
 
-Patch0: aix-ar-arguments.patch
+Patch0: ldflags-and-arflags.patch
 
 %define prefix %{buildprefix}
 
@@ -35,12 +35,11 @@ SYS=`uname -s`
 cd openssl-fips-%{fips_version}
 if [ $SYS = "AIX" ]; then
 ./Configure aix-gcc fipscanisterbuild no-asm
-/usr/bin/patch -p1 < ../../../SOURCES/makefile.fips.aix.patch
 else
 ./config fipscanisterbuild no-asm
 fi
 
-$MAKE
+$MAKE SHARED_LDFLAGS="${LDFLAGS}"
 cd ..
 
 
@@ -48,13 +47,11 @@ echo BUILD_TYPE is $BUILD_TYPE
 
 if [ $SYS = "AIX" ]
 then
-    LDFLAGS=-L%{buildprefix}/lib
     CPPFLAGS=-I%{buildprefix}/include
 
-    LDFLAGS="$LDFLAGS" CPPFLAGS="$CPPFLAGS" ./Configure aix-gcc no-ec --with-fipslibdir=%{_builddir}/openssl-0.9.8za/openssl-fips-%{fips_version}/fips shared --prefix=%{prefix}
-    /usr/bin/patch -p1 < ../../SOURCES/makefile.openssl.aix.patch
+    CPPFLAGS="$CPPFLAGS" ./Configure aix-gcc no-ec --with-fipslibdir=%{_builddir}/openssl-0.9.8za/openssl-fips-%{fips_version}/fips shared --prefix=%{prefix}
     $MAKE depend
-    $MAKE
+    $MAKE SHARED_LDFLAGS="${LDFLAGS}"
 else
     DEBUG_CONFIG_FLAGS=
     DEBUG_CFLAGS=
@@ -74,7 +71,7 @@ else
         sed -i -e '/^CFLAG=/{s/ -O3//;s/ -fomit-frame-pointer//}'   Makefile
     fi
 
-    $MAKE SHARED_LDFLAGS="${SHARED_LDFLAGS} -L%{prefix}/lib -Wl,-rpath %{prefix}/lib"
+    $MAKE SHARED_LDFLAGS="${LDFLAGS}"
 fi
 
 # ECDSA/ECDH tests are broken, so we explicitly omit them
