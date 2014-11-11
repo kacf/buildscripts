@@ -1,0 +1,18 @@
+diff -r -u libiconv-1.14.old/lib/Makefile.in libiconv-1.14/lib/Makefile.in
+--- libiconv-1.14.old/lib/Makefile.in	2014-11-10 14:46:21.457548718 +0100
++++ libiconv-1.14/lib/Makefile.in	2014-11-10 14:46:53.213706177 +0100
+@@ -104,14 +104,6 @@
+ install : all force
+ 	if [ ! -d $(DESTDIR)$(libdir) ] ; then $(mkinstalldirs) $(DESTDIR)$(libdir) ; fi
+ 	$(LIBTOOL_INSTALL) $(INSTALL_DATA) libiconv.la $(DESTDIR)$(libdir)/libiconv.la
+-	case "@host_os@" in \
+-	  aix*) (cd $(DESTDIR)$(libdir) && \
+-	         objects=`ar t libiconv.a`" "`ar t /lib/libiconv.a` && \
+-	         ar x libiconv.a && ar x /lib/libiconv.a && \
+-	         ar q libiconv.new.a $$objects && \
+-	         rm -f $$objects && \
+-	         mv -f libiconv.new.a libiconv.a) ;; \
+-	esac
+ 
+ install-strip : install
+ 

@@ -8,6 +8,8 @@ Group: Other
 Url: http://www.gnu.org/software/libiconv/
 BuildRoot: %{_topdir}/BUILD/%{name}-%{version}-%{release}-buildroot
 
+Patch0: remove-misguided-aix-fixing-attempt.patch
+
 AutoReqProv: no
 
 %define prefix %{buildprefix}
@@ -15,8 +17,9 @@ AutoReqProv: no
 %prep
 mkdir -p %{_builddir}
 %setup -q -n libiconv-1.14
+%patch0 -p1
 
-./configure --prefix=%{prefix} --disable-shared --enable-static
+./configure --prefix=%{prefix} --enable-shared --disable-static
 
 
 %build
@@ -51,16 +54,12 @@ CFEngine Build Automation -- libiconv -- development files
 %defattr(-,root,root)
 
 %dir %prefix/lib
-%prefix/lib/*.a
+%prefix/lib/*.so*
 %prefix/lib/charset.alias
 
 %files devel
 %defattr(-,root,root)
 
 %prefix/include
-
-%dir %prefix/lib
-%prefix/lib/*.a
-%prefix/lib/charset.alias
 
 %changelog

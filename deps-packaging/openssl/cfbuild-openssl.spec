@@ -51,7 +51,7 @@ then
 
     CPPFLAGS="$CPPFLAGS" ./Configure aix-gcc no-ec --with-fipslibdir=%{_builddir}/openssl-0.9.8za/openssl-fips-%{fips_version}/fips shared --prefix=%{prefix}
     $MAKE depend
-    $MAKE SHARED_LDFLAGS="${LDFLAGS}"
+    $MAKE SHARED_LDFLAGS="${LDFLAGS} -Wl,-blibpath:%{buildprefix}/lib:/usr/lib:/lib -shared"
 else
     DEBUG_CONFIG_FLAGS=
     DEBUG_CFLAGS=
@@ -71,7 +71,7 @@ else
         sed -i -e '/^CFLAG=/{s/ -O3//;s/ -fomit-frame-pointer//}'   Makefile
     fi
 
-    $MAKE SHARED_LDFLAGS="${LDFLAGS}"
+    $MAKE SHARED_LDFLAGS="${LDFLAGS} -shared"
 fi
 
 # ECDSA/ECDH tests are broken, so we explicitly omit them
